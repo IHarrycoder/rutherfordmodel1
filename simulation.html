@@ -1,0 +1,700 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Rutherford Model Simulation</title>
+    <style>
+        /* General Styles */
+        body {
+            margin: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            background: linear-gradient(135deg, #1a1a1a, #2c3e50);
+            color: #ffffff;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        h1 {
+            margin: 20px 0;
+            font-size: 2.5rem;
+            color: #00ffcc;
+            text-shadow: 0 0 10px rgba(0, 255, 204, 0.7);
+        }
+
+        .container {
+            display: flex;
+            justify-content: space-between;
+            width: 90%;
+            max-width: 1200px;
+            gap: 20px;
+        }
+
+        .simulation-section {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .controls-section {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        canvas {
+            border: 2px solid #00ffcc;
+            background-color: #000;
+            box-shadow: 0 0 20px rgba(0, 255, 204, 0.5);
+            border-radius: 10px;
+        }
+
+        .controls {
+            margin-top: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            background-color: rgba(30, 30, 30, 0.8);
+            padding: 20px;
+            border-radius: 10px;
+            backdrop-filter: blur(10px);
+            box-shadow: 0 0 15px rgba(0, 0, 0, 0.5);
+            width: 100%;
+        }
+
+        .control-group {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        label {
+            font-size: 16px;
+            color: #00ffcc;
+            font-weight: 500;
+        }
+
+        input[type="range"] {
+            width: 120px;
+            background: #00ffcc;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        button {
+            padding: 10px 20px;
+            font-size: 16px;
+            cursor: pointer;
+            background-color: #00ffcc;
+            color: #121212;
+            border: none;
+            border-radius: 5px;
+            transition: all 0.3s ease;
+            font-weight: 600;
+        }
+
+        button:hover {
+            background-color: #00ccaa;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 255, 204, 0.4);
+        }
+
+        table {
+            width: 100%;
+            color: white;
+            border-collapse: collapse;
+            background-color: rgba(30, 30, 30, 0.8);
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 0 15px rgba(0, 0, 0, 0.5);
+            backdrop-filter: blur(10px);
+            margin-top: 20px;
+        }
+
+        th,
+        td {
+            padding: 12px 16px;
+            border: 1px solid #444;
+            text-align: center;
+        }
+
+        th {
+            background-color: #333;
+            color: #00ffcc;
+            font-weight: 600;
+        }
+
+        td {
+            background-color: rgba(34, 34, 34, 0.8);
+        }
+
+        input[type="number"] {
+            width: 80px;
+            padding: 8px;
+            border: 1px solid #00ffcc;
+            border-radius: 5px;
+            background-color: rgba(18, 18, 18, 0.8);
+            color: white;
+            font-size: 14px;
+            text-align: center;
+        }
+
+        #result {
+            margin-top: 20px;
+            color: #00ffcc;
+            font-size: 18px;
+            background-color: rgba(30, 30, 30, 0.8);
+            padding: 15px;
+            border-radius: 10px;
+            box-shadow: 0 0 15px rgba(0, 0, 0, 0.5);
+            backdrop-filter: blur(10px);
+            width: 100%;
+            text-align: center;
+        }
+
+        .popup {
+            display: none;
+            position: fixed;
+            top: 50%;
+            right: 20px;
+            transform: translateY(-50%);
+            background-color: rgba(51, 51, 51, 0.9);
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
+            z-index: 1000;
+            text-align: center;
+            color: white;
+            backdrop-filter: blur(10px);
+            width: 300px;
+        }
+
+        .popup p {
+            margin: 10px 0;
+            font-size: 16px;
+        }
+
+        .popup button {
+            margin-top: 10px;
+            padding: 8px 16px;
+            font-size: 14px;
+            cursor: pointer;
+            background-color: #00ffcc;
+            color: #121212;
+            border: none;
+            border-radius: 5px;
+            transition: all 0.3s ease;
+            font-weight: 600;
+        }
+
+        .popup button:hover {
+            background-color: #00ccaa;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 255, 204, 0.4);
+        }
+
+        .overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.7);
+            z-index: 999;
+        }
+    </style>
+</head>
+
+<body>
+    <h1>Rutherford Model Simulation</h1>
+    <div class="container">
+        <!-- Simulation Section -->
+        <div class="simulation-section">
+            <canvas id="simulationCanvas"></canvas>
+            <div class="controls">
+                <div class="control-group">
+                    <label>Speed: <span id="speedValue">4</span></label>
+                    <input type="range" id="speedSlider" min="2" max="10" value="4">
+                </div>
+                <div class="control-group">
+                    <label>Particles: <span id="particleCount">1</span></label>
+                    <input type="range" id="particleSlider" min="1" max="500" value="1">
+                </div>
+                <button onclick="fireParticles()">Fire</button>
+                <button onclick="resetSimulation()">Reset</button>
+                <button onclick="toggleVoiceInstructions()" id="voiceToggleButton">Enable Voice Instructions</button>
+            </div>
+        </div>
+
+        <!-- Controls and Observation Section -->
+        <div class="controls-section">
+            <div class="controls">
+                <h3>Observation Table</h3>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Student</th>
+                            <th>Particles Thrown</th>
+                            <th>Particles Scattered</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <!-- Student Rows -->
+                        <tr>
+                            <td>Student 1</td>
+                            <td><input type="number" id="particlesThrown1" value="0"></td>
+                            <td><input type="number" id="particlesScattered1" value="0"></td>
+                        </tr>
+                        <tr>
+                            <td>Student 2</td>
+                            <td><input type="number" id="particlesThrown2" value="0"></td>
+                            <td><input type="number" id="particlesScattered2" value="0"></td>
+                        </tr>
+                        <tr>
+                            <td>Student 3</td>
+                            <td><input type="number" id="particlesThrown3" value="0"></td>
+                            <td><input type="number" id="particlesScattered3" value="0"></td>
+                        </tr>
+                        <tr>
+                            <td>Student 4</td>
+                            <td><input type="number" id="particlesThrown4" value="0"></td>
+                            <td><input type="number" id="particlesScattered4" value="0"></td>
+                        </tr>
+                        <tr>
+                            <td>Student 5</td>
+                            <td><input type="number" id="particlesThrown5" value="0"></td>
+                            <td><input type="number" id="particlesScattered5" value="0"></td>
+                        </tr>
+                        <tr>
+                            <td>Student 6</td>
+                            <td><input type="number" id="particlesThrown6" value="0"></td>
+                            <td><input type="number" id="particlesScattered6" value="0"></td>
+                        </tr>
+                        <tr>
+                            <td>Student 7</td>
+                            <td><input type="number" id="particlesThrown7" value="0"></td>
+                            <td><input type="number" id="particlesScattered7" value="0"></td>
+                        </tr>
+                        <tr>
+                            <td>Student 8</td>
+                            <td><input type="number" id="particlesThrown8" value="0"></td>
+                            <td><input type="number" id="particlesScattered8" value="0"></td>
+                        </tr>
+                        <!-- Total Row -->
+                        <tr>
+                            <td><strong>Total</strong></td>
+                            <td><input type="number" id="totalThrown" value="0" disabled></td>
+                            <td><input type="number" id="totalScattered" value="0" disabled></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="controls">
+                <h3>Side Length Calculation</h3>
+                <div class="control-group">
+                    <label>Side Length (l):</label>
+                    <input type="number" id="sideLengthInput" placeholder="Enter side length">
+                </div>
+                <button onclick="setSideLength()">Set Side Length</button>
+                <button onclick="calculateCentralLeg()">Calculate Central Leg</button>
+                <div id="result"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Popup -->
+    <div class="overlay" id="overlay"></div>
+    <div class="popup" id="popup">
+        <p>Total Particles Thrown: <span id="popupThrown">0</span></p>
+        <p>Total Particles Deflected: <span id="popupDeflected">0</span></p>
+        <p>Please record these values in the observation table.</p>
+        <button onclick="closePopup()">Close</button>
+    </div>
+
+    <script>
+        const canvas = document.getElementById("simulationCanvas");
+        const ctx = canvas.getContext("2d");
+
+        // Set canvas dimensions
+        canvas.width = 800;
+        canvas.height = 600;
+
+        // Define nucleus (now as a 3D table)
+        const nucleus = {
+            x: canvas.width / 2,
+            y: canvas.height / 2,
+            width: 120,  // Increased size for table
+            height: 80   // Increased size for table
+        };
+
+        // Gun properties (fixed angle at 90° upwards)
+        const gun = {
+            x: canvas.width / 2,
+            y: canvas.height - 50,
+            width: 40,
+            height: 30,
+            angle: Math.PI / 2 // Fixed 90° angle (pointing straight up)
+        };
+
+        // Table legs (position relative to the table)
+        const legs = [
+            { x: canvas.width * 0.2, y: canvas.height / 2, radius: 15 },
+            { x: canvas.width * 0.4, y: canvas.height / 2, radius: 15 },
+            { x: canvas.width * 0.6, y: canvas.height / 2, radius: 15 },
+            { x: canvas.width * 0.8, y: canvas.height / 2, radius: 15 },
+            { x: canvas.width / 2, y: canvas.height / 2, radius: 20 } // Center leg (Nucleus)
+        ];
+
+        let particles = [];
+        let electronsFired = 0;
+        let electronsDeflected = 0;
+
+        // UI Elements
+        const speedSlider = document.getElementById("speedSlider");
+        const particleSlider = document.getElementById("particleSlider");
+        const speedValue = document.getElementById("speedValue");
+        const particleCount = document.getElementById("particleCount");
+
+        // Popup Elements
+        const popup = document.getElementById("popup");
+        const overlay = document.getElementById("overlay");
+        const popupThrown = document.getElementById("popupThrown");
+        const popupDeflected = document.getElementById("popupDeflected");
+
+        // Total Elements
+        const totalThrown = document.getElementById("totalThrown");
+        const totalScattered = document.getElementById("totalScattered");
+
+        // New Variables
+        let sideLength = 0; // Stores the side length of the table
+        const deflectionProbability = 0.056; // P = 5.6%
+
+        // Voice Instructions
+        let voiceEnabled = false;
+        const synth = window.speechSynthesis;
+        let currentUtterance = null;
+
+        function speak(text) {
+            if (voiceEnabled && synth) {
+                // Cancel any ongoing speech
+                if (currentUtterance) {
+                    synth.cancel();
+                }
+                currentUtterance = new SpeechSynthesisUtterance(text);
+                synth.speak(currentUtterance);
+            }
+        }
+
+        function toggleVoiceInstructions() {
+            voiceEnabled = !voiceEnabled;
+            const voiceToggleButton = document.getElementById("voiceToggleButton");
+            voiceToggleButton.textContent = voiceEnabled ? "Disable Voice Instructions" : "Enable Voice Instructions";
+
+            if (voiceEnabled) {
+                speak("Voice instructions enabled. Adjust speed and particle count, then press Fire to begin.");
+            } else {
+                if (synth) {
+                    synth.cancel();
+                }
+            }
+        }
+
+        speedSlider.addEventListener("input", () => {
+            speedValue.innerText = speedSlider.value;
+            if (voiceEnabled) {
+                speak(`Speed set to ${speedSlider.value}`);
+            }
+        });
+
+        particleSlider.addEventListener("input", () => {
+            particleCount.innerText = particleSlider.value;
+            if (voiceEnabled) {
+                speak(`Particle count set to ${particleSlider.value}`);
+            }
+        });
+
+        function draw3DTable() {
+            const gradient = ctx.createLinearGradient(100, canvas.height / 2 - 20, canvas.width - 100, canvas.height / 2 - 20);
+            gradient.addColorStop(0, "#8B4513");
+            gradient.addColorStop(1, "#D2691E");
+
+            ctx.fillStyle = gradient;
+            ctx.beginPath();
+            ctx.moveTo(100, canvas.height / 2 - 10);
+            ctx.lineTo(canvas.width - 100, canvas.height / 2 - 10);
+            ctx.lineTo(canvas.width - 110, canvas.height / 2 + 10);
+            ctx.lineTo(110, canvas.height / 2 + 10);
+            ctx.closePath();
+            ctx.fill();
+
+            ctx.fillStyle = "#A52A2A";
+            legs.forEach(leg => {
+                ctx.beginPath();
+                ctx.arc(leg.x, leg.y, leg.radius, 0, Math.PI * 2);
+                ctx.fill();
+                ctx.closePath();
+            });
+
+            ctx.fillStyle = "rgba(0, 0, 0, 0.2)";
+            legs.forEach(leg => {
+                ctx.beginPath();
+                ctx.arc(leg.x + 5, leg.y + 5, leg.radius, 0, Math.PI * 2);
+                ctx.fill();
+                ctx.closePath();
+            });
+        }
+
+        function drawNucleus() {
+            // Draw 3D table-like nucleus (gold foil)
+            ctx.save();
+
+            // Table top (main surface)
+            ctx.fillStyle = "rgba(255, 215, 0, 0.9)"; // Gold color
+            ctx.beginPath();
+            ctx.moveTo(nucleus.x - nucleus.width / 2, nucleus.y - nucleus.height / 2);
+            ctx.lineTo(nucleus.x + nucleus.width / 2, nucleus.y - nucleus.height / 2);
+            ctx.lineTo(nucleus.x + nucleus.width / 3, nucleus.y + nucleus.height / 3);
+            ctx.lineTo(nucleus.x - nucleus.width / 3, nucleus.y + nucleus.height / 3);
+            ctx.closePath();
+            ctx.fill();
+
+            // Table sides (3D perspective)
+            ctx.fillStyle = "rgba(210, 180, 0, 0.7)"; // Darker gold
+            ctx.beginPath();
+            ctx.moveTo(nucleus.x + nucleus.width / 2, nucleus.y - nucleus.height / 2);
+            ctx.lineTo(nucleus.x + nucleus.width / 3, nucleus.y + nucleus.height / 3);
+            ctx.lineTo(nucleus.x + nucleus.width / 3, nucleus.y + nucleus.height / 2);
+            ctx.lineTo(nucleus.x + nucleus.width / 2, nucleus.y);
+            ctx.closePath();
+            ctx.fill();
+
+            ctx.beginPath();
+            ctx.moveTo(nucleus.x - nucleus.width / 2, nucleus.y - nucleus.height / 2);
+            ctx.lineTo(nucleus.x - nucleus.width / 3, nucleus.y + nucleus.height / 3);
+            ctx.lineTo(nucleus.x - nucleus.width / 3, nucleus.y + nucleus.height / 2);
+            ctx.lineTo(nucleus.x - nucleus.width / 2, nucleus.y);
+            ctx.closePath();
+            ctx.fill();
+
+            // Table legs (simplified)
+            ctx.fillStyle = "rgba(160, 130, 0, 0.6)";
+            ctx.fillRect(nucleus.x - nucleus.width / 4, nucleus.y + nucleus.height / 3,
+                nucleus.width / 6, nucleus.height / 3);
+            ctx.fillRect(nucleus.x + nucleus.width / 8, nucleus.y + nucleus.height / 3,
+                nucleus.width / 6, nucleus.height / 3);
+
+            ctx.restore();
+        }
+
+        function drawGun() {
+            ctx.fillStyle = "red";
+            ctx.fillRect(gun.x - gun.width / 2, gun.y, gun.width, gun.height);
+        }
+
+        function drawParticles() {
+            particles.forEach(p => {
+                ctx.fillStyle = `rgba(0, 255, 255, ${p.opacity})`;
+                ctx.beginPath();
+                ctx.arc(p.x, p.y, p.radius, 0, Math.PI * 2);
+                ctx.fill();
+                ctx.closePath();
+            });
+        }
+
+        function updateParticles() {
+            particles.forEach(p => {
+                p.x += p.dx;
+                p.y += p.dy;
+                p.opacity -= 0.005;
+
+                // Rectangular nucleus collision detection (using table top surface)
+                if (
+                    p.x > nucleus.x - nucleus.width / 2 &&
+                    p.x < nucleus.x + nucleus.width / 2 &&
+                    p.y > nucleus.y - nucleus.height / 2 &&
+                    p.y < nucleus.y + nucleus.height / 3
+                ) {
+                    let angle = Math.atan2(p.y - nucleus.y, p.x - nucleus.x);
+                    p.dx = Math.cos(angle) * p.speed * 1.5;
+                    p.dy = Math.sin(angle) * p.speed * 1.5;
+                    electronsDeflected++;
+                }
+
+                legs.forEach(leg => {
+                    let dx = p.x - leg.x;
+                    let dy = p.y - leg.y;
+                    let distance = Math.sqrt(dx * dx + dy * dy);
+                    if (distance < leg.radius + p.radius) {
+                        let angle = Math.atan2(dy, dx);
+                        p.dx = -Math.cos(angle) * p.speed * (0.8 + Math.random() * 0.4);
+                        p.dy = -Math.sin(angle) * p.speed * (0.8 + Math.random() * 0.4);
+                    }
+                });
+
+                if (p.y < 0 || p.y > canvas.height || p.x < 0 || p.x > canvas.width || p.opacity <= 0) {
+                    particles = particles.filter(particle => particle !== p);
+                }
+            });
+        }
+
+        function drawScene() {
+            ctx.fillStyle = "rgba(0, 0, 0, 0.2)";
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            draw3DTable();
+            drawNucleus();
+            drawGun();
+            drawParticles();
+        }
+
+        function animate() {
+            drawScene();
+            updateParticles();
+            requestAnimationFrame(animate);
+        }
+
+        function showPopup(thrown, deflected) {
+            popupThrown.innerText = thrown;
+            popupDeflected.innerText = deflected;
+            popup.style.display = "block";
+            overlay.style.display = "block";
+            if (voiceEnabled) {
+                speak(`Experiment complete. ${thrown} particles were fired and ${deflected} were deflected. Please record ${thrown} in the Particles Thrown column and ${deflected} in the Particles Scattered column of the observation table.`);
+            }
+        }
+
+        function closePopup() {
+            popup.style.display = "none";
+            overlay.style.display = "none";
+        }
+
+        function updateTotal() {
+            let totalThrownValue = 0;
+            let totalScatteredValue = 0;
+
+            for (let i = 1; i <= 8; i++) {
+                totalThrownValue += parseInt(document.getElementById(`particlesThrown${i}`).value) || 0;
+                totalScatteredValue += parseInt(document.getElementById(`particlesScattered${i}`).value) || 0;
+            }
+
+            totalThrown.value = totalThrownValue;
+            totalScattered.value = totalScatteredValue;
+        }
+
+        function fireParticles() {
+            const speed = parseFloat(speedSlider.value);
+            const count = parseInt(particleSlider.value);
+            const deflected = Math.round(count * deflectionProbability);
+
+            for (let i = 0; i < count; i++) {
+                // Fixed angle (90° upwards) with slight random variation
+                const angle = gun.angle + (Math.random() - 0.5) * 0.2;
+                const velocityX = Math.cos(angle) * speed;
+                const velocityY = -Math.sin(angle) * speed;
+
+                particles.push({
+                    x: gun.x,
+                    y: gun.y,
+                    dx: velocityX,
+                    dy: velocityY,
+                    radius: 5,
+                    opacity: 1,
+                    speed: speed
+                });
+
+                electronsFired++;
+
+                // Ensure deflection rate is approximately 5.6%
+                if (Math.random() < deflectionProbability) {
+                    electronsDeflected++;
+                }
+            }
+
+            // Show popup with results
+            showPopup(count, deflected);
+
+            // Update observation table
+            updateObservationTable(count, deflected);
+
+            // Update total values
+            updateTotal();
+        }
+
+        function updateObservationTable(thrown, deflected) {
+            for (let i = 1; i <= 8; i++) {
+                let thrownInput = document.getElementById(`particlesThrown${i}`);
+                let scatteredInput = document.getElementById(`particlesScattered${i}`);
+
+                if (parseInt(thrownInput.value) === 0 && parseInt(scatteredInput.value) === 0) {
+                    thrownInput.value = thrown;
+                    scatteredInput.value = deflected;
+                    break;
+                }
+            }
+        }
+
+        function resetSimulation() {
+            particles = [];
+            electronsFired = 0;
+            electronsDeflected = 0;
+
+            // Reset observation table inputs
+            for (let i = 1; i <= 8; i++) {
+                document.getElementById(`particlesThrown${i}`).value = 0;
+                document.getElementById(`particlesScattered${i}`).value = 0;
+            }
+
+            // Reset totals
+            updateTotal();
+
+            if (voiceEnabled) {
+                speak("Simulation has been reset. All values are cleared.");
+            }
+        }
+
+        function setSideLength() {
+            const input = document.getElementById("sideLengthInput").value;
+            if (input && !isNaN(input) && input > 0) {
+                sideLength = parseFloat(input);
+                document.getElementById("result").innerText = `Side Length (l) set to: ${sideLength}`;
+                if (voiceEnabled) {
+                    speak(`Side length set to ${sideLength}. You can now calculate central leg length.`);
+                }
+            } else {
+                alert("Please enter a valid positive number for the side length.");
+                if (voiceEnabled) {
+                    speak("Invalid input. Please enter a positive number for side length.");
+                }
+            }
+        }
+
+        function calculateCentralLeg() {
+            if (sideLength <= 0) {
+                alert("Please set a valid side length first.");
+                if (voiceEnabled) {
+                    speak("Please set the side length first.");
+                }
+                return;
+            }
+
+            const centralLegLength = deflectionProbability * sideLength;
+            document.getElementById("result").innerText =
+                `Central Leg Length (k) = ${deflectionProbability} * ${sideLength} = ${centralLegLength.toFixed(2)}`;
+
+            if (voiceEnabled) {
+                speak(`Calculated central leg length is ${centralLegLength.toFixed(2)} using the formula: 5.6 percent of ${sideLength}.`);
+            }
+        }
+
+        animate();
+    </script>
+</body>
+
+</html>

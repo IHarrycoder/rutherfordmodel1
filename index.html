@@ -1,0 +1,349 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Simulation with Centered Button</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+    <style>
+        /* General Styles */
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            flex-direction: column;
+            background: linear-gradient(135deg, #1e3c72, #2a5298);
+            color: white;
+            font-family: 'Poppins', Arial, sans-serif;
+        }
+
+        /* Link Styling */
+        #simulation-link {
+            color: #ffcc00;
+            text-decoration: none;
+            cursor: pointer;
+            margin-bottom: 20px;
+            font-size: 18px;
+            font-weight: bold;
+            transition: all 0.3s ease;
+            text-shadow: 0 0 10px rgba(255, 204, 0, 0.7);
+        }
+
+        #simulation-link:hover {
+            color: #ffdd44;
+            text-shadow: 0 0 15px rgba(255, 221, 68, 0.9);
+        }
+
+        /* Button Styling */
+        .button-container {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            flex-wrap: wrap;
+            margin-top: 20px;
+        }
+
+        #arrange-apparatus-button,
+        #show-table-button,
+        #show-marbles-button,
+        #show-model-button,
+        #move-to-apparatus-button,
+        #toggle-voice-button {
+            display: none;
+            padding: 12px 25px;
+            background-color: #ffcc00;
+            color: black;
+            border: none;
+            border-radius: 30px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: bold;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
+        }
+
+        #arrange-apparatus-button:hover,
+        #show-table-button:hover,
+        #show-marbles-button:hover,
+        #show-model-button:hover,
+        #move-to-apparatus-button:hover,
+        #toggle-voice-button:hover {
+            background-color: #ffdd44;
+            transform: translateY(-3px);
+            box-shadow: 0 6px 10px rgba(0, 0, 0, 0.3);
+        }
+
+        #toggle-voice-button {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background-color: #4CAF50;
+            display: inline-block;
+        }
+
+        #toggle-voice-button.voice-off {
+            background-color: #f44336;
+        }
+
+        /* Image Container Styling */
+        .image-container {
+            display: flex;
+            justify-content: space-between;
+            width: 90%;
+            max-width: 1200px;
+            margin-top: 30px;
+            padding: 20px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 15px;
+            backdrop-filter: blur(10px);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
+        }
+
+        #left-images {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            width: 48%;
+        }
+
+        #right-image {
+            width: 48%;
+        }
+
+        .image-container img {
+            width: 100%;
+            height: auto;
+            display: none;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .image-container img:hover {
+            transform: scale(1.02);
+            box-shadow: 0 6px 10px rgba(0, 0, 0, 0.4);
+        }
+
+        #model-image {
+            height: 400px;
+            object-fit: cover;
+        }
+
+        #table-image {
+            height: 180px;
+            object-fit: cover;
+        }
+
+        #marbles-image {
+            height: 200px;
+            object-fit: cover;
+        }
+
+        /* Animation for Fade-In */
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .fade-in {
+            animation: fadeIn 0.5s ease forwards;
+        }
+
+        /* Direct Link Styling */
+        .direct-link {
+            margin-top: 30px;
+            text-align: center;
+        }
+
+        .direct-link a {
+            color: #ffcc00;
+            text-decoration: none;
+            font-size: 18px;
+            font-weight: bold;
+            transition: all 0.3s ease;
+            text-shadow: 0 0 10px rgba(255, 204, 0, 0.7);
+        }
+
+        .direct-link a:hover {
+            color: #ffdd44;
+            text-shadow: 0 0 15px rgba(255, 221, 68, 0.9);
+        }
+    </style>
+</head>
+
+<body>
+    <button id="toggle-voice-button">Enable Voice Instructions</button>
+
+    <p><span id="simulation-link">1) CHECK APPARATUS (Recommended)</span></p>
+
+    <div class="button-container">
+        <button id="arrange-apparatus-button">Arrange Apparatus</button>
+        <button id="show-table-button">Show Table</button>
+        <button id="show-marbles-button">Show Marbles</button>
+        <button id="show-model-button">Show Model</button>
+        <button id="move-to-apparatus-button" onclick="location.href='simulation.html'">Directly Move to
+            Apparatus</button>
+    </div>
+
+    <div class="image-container">
+        <div id="left-images">
+            <img id="table-image" src="table.png" alt="Table" class="fade-in">
+            <img id="marbles-image" src="bowlmarbles.png" alt="Marbles" class="fade-in">
+        </div>
+        <div id="right-image">
+            <img id="model-image" src="modell.png" alt="Model" class="fade-in">
+        </div>
+    </div>
+
+    <div class="direct-link">
+        <a href="simulation.html">2) DIRECTLY GO TO RUTHERFORD MODEL SIMULATION</a>
+    </div>
+
+    <script>
+        // Voice Instructions Setup
+        const synth = window.speechSynthesis;
+        let voiceEnabled = false;
+        let currentUtterance = null;
+        let currentStep = 0;
+
+        const instructions = [
+            "Welcome to the Rutherford Model Simulation setup. Let's go through the steps to prepare the experiment.",
+            "First step: Click on 'Check Apparatus' to begin setting up your experiment.",
+            "Great! Now click 'Arrange Apparatus' to prepare your experimental setup.",
+            "Excellent. Now click 'Show Table' to display the table where the experiment will take place.",
+            "Well done. Next, click 'Show Marbles' to view the marbles that will represent alpha particles.",
+            "Almost there! Now click 'Show Model' to display the Rutherford atomic model.",
+            "Perfect setup! You're now ready to begin the experiment. Click 'Directly Move to Apparatus' to start.",
+            "Alternatively, you can click 'Directly Go to Rutherford Model Simulation' to skip setup and begin immediately."
+        ];
+
+        function speak(text) {
+            if (synth && voiceEnabled) {
+                synth.cancel(); // Cancel any ongoing speech
+                currentUtterance = new SpeechSynthesisUtterance(text);
+                synth.speak(currentUtterance);
+            }
+        }
+
+        function nextStep() {
+            if (currentStep < instructions.length) {
+                speak(instructions[currentStep]);
+                currentStep++;
+            }
+        }
+
+        // Toggle voice button functionality
+        const toggleVoiceButton = document.getElementById('toggle-voice-button');
+        toggleVoiceButton.addEventListener('click', function () {
+            voiceEnabled = !voiceEnabled;
+            if (voiceEnabled) {
+                toggleVoiceButton.textContent = "Disable Voice Instructions";
+                toggleVoiceButton.classList.remove('voice-off');
+                toggleVoiceButton.classList.add('fade-in');
+                currentStep = 0; // Reset to first instruction
+                nextStep(); // Start instructions
+            } else {
+                toggleVoiceButton.textContent = "Enable Voice Instructions";
+                toggleVoiceButton.classList.add('voice-off');
+                synth.cancel(); // Stop any ongoing speech
+            }
+        });
+
+        const simulationLink = document.getElementById('simulation-link');
+        const arrangeApparatusButton = document.getElementById('arrange-apparatus-button');
+        const showTableButton = document.getElementById('show-table-button');
+        const showMarblesButton = document.getElementById('show-marbles-button');
+        const showModelButton = document.getElementById('show-model-button');
+        const moveToApparatusButton = document.getElementById('move-to-apparatus-button');
+        const tableImage = document.getElementById('table-image');
+        const marblesImage = document.getElementById('marbles-image');
+        const modelImage = document.getElementById('model-image');
+        const directLink = document.querySelector('.direct-link a');
+
+        // Original functionality with added voice guidance
+        simulationLink.addEventListener('click', function () {
+            arrangeApparatusButton.style.display = 'inline-block';
+            arrangeApparatusButton.classList.add('fade-in');
+            if (voiceEnabled) {
+                speak("Apparatus check complete. The 'Arrange Apparatus' button is now available. " + instructions[2]);
+            }
+        });
+
+        arrangeApparatusButton.addEventListener('click', function () {
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+            showTableButton.style.display = 'inline-block';
+            showTableButton.classList.add('fade-in');
+            if (voiceEnabled) {
+                speak("Apparatus arranged successfully. The 'Show Table' button is now available. " + instructions[3]);
+            }
+        });
+
+        showTableButton.addEventListener('click', function () {
+            tableImage.style.display = 'block';
+            showMarblesButton.style.display = 'inline-block';
+            showMarblesButton.classList.add('fade-in');
+            if (voiceEnabled) {
+                speak("Table displayed. The 'Show Marbles' button is now available. " + instructions[4]);
+            }
+        });
+
+        showMarblesButton.addEventListener('click', function () {
+            marblesImage.style.display = 'block';
+            showModelButton.style.display = 'inline-block';
+            showModelButton.classList.add('fade-in');
+            if (voiceEnabled) {
+                speak("Marbles displayed. The 'Show Model' button is now available. " + instructions[5]);
+            }
+        });
+
+        showModelButton.addEventListener('click', function () {
+            modelImage.style.display = 'block';
+            moveToApparatusButton.style.display = 'inline-block';
+            moveToApparatusButton.classList.add('fade-in');
+            if (voiceEnabled) {
+                speak("Rutherford model displayed. You can now start the experiment. " + instructions[6]);
+            }
+        });
+
+        moveToApparatusButton.addEventListener('click', function () {
+            if (voiceEnabled) {
+                speak("Starting the Rutherford Model Simulation now.");
+            }
+        });
+
+        directLink.addEventListener('click', function () {
+            if (voiceEnabled) {
+                speak("Taking you directly to the Rutherford Model Simulation.");
+            }
+        });
+
+        // Button hover instructions
+        function setupHoverInstructions(button, instruction) {
+            button.addEventListener('mouseenter', function () {
+                if (voiceEnabled) {
+                    speak(instruction);
+                }
+            });
+        }
+
+        setupHoverInstructions(simulationLink, "Click this to begin checking your apparatus.");
+        setupHoverInstructions(arrangeApparatusButton, "Click to arrange your experimental apparatus.");
+        setupHoverInstructions(showTableButton, "Click to display the experiment table.");
+        setupHoverInstructions(showMarblesButton, "Click to show the marbles representing alpha particles.");
+        setupHoverInstructions(showModelButton, "Click to display the Rutherford atomic model.");
+        setupHoverInstructions(moveToApparatusButton, "Click to begin the simulation with your prepared setup.");
+        setupHoverInstructions(directLink, "Click to skip setup and go directly to the simulation.");
+    </script>
+</body>
+
+</html>
